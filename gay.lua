@@ -608,53 +608,90 @@ local function removeOldestServer()
 end
 
 local function getServerUptime(server)
-    return os.time() - server.ServerOsTime
+    return os.time() - server.CreatedAt
 end
 
 local function findValidServer()
+
     local networkModule = game.ReplicatedStorage.Chest.Assets.Modules.Network
     local servers = networkModule.ClientNetwork.GetServerLists:InvokeServer()
-    if type(servers) ~= "table" or not next(servers) then return nil end
 
-    local validServers = { group1 = {}, group2 = {}, group3 = {}, group4 = {}, group5 = {} ,group6 = {}, group7 = {}, group8 = {},group9 = {}, group10 = {} , group11 = {}, group12 = {}}
-    local currentJobId, currentPlaceId = game.JobId, game.PlaceId
+    if type(servers) ~= "table" or not next(servers) then
+        return nil
+    end
+
+    local validServers = {
+        group1={},group2={},group3={},group4={},group5={},group6={},
+        group7={},group8={},group9={},group10={},group11={},group12={}
+    }
+
+    local currentJobId = game.JobId
+    local currentPlaceId = game.PlaceId
 
     for _, server in pairs(servers) do
-    if type(server) == "table" and server.ServerOsTime and server.JobId and server.GetPlayers and server.PlaceId then
-        local uptime, jobId, players = getServerUptime(server), server.JobId, server.GetPlayers
+        if type(server) == "table"
+        and server.CreatedAt
+        and server.JobId
+        and server.PlayerCount
+        and server.PlaceId then
 
-        if server.PlaceId == currentPlaceId and jobId ~= currentJobId and not visitedServers[jobId] and players > 0 and players < 13 then
-             if uptime >= 4 * 60 * 60 + 21 * 60 and uptime <= 4 * 60 * 60 + 30 * 60 then
-                table.insert(validServers.group1, server) 
-                elseif uptime >= 8 * 60 * 60 + 52 * 60 and uptime <= 9 * 60 * 60 + 1 * 60 then
-            
-                table.insert(validServers.group2, server)
-             elseif uptime >= 59 * 60 + 1 and uptime <= 1 * 60 * 60 + 7 * 60 then
-                table.insert(validServers.group3, server)
-              elseif uptime >= 2 * 60 * 60 + 7 * 60 and uptime <= 2 * 60 * 60 + 14 * 60 then
-                table.insert(validServers.group4, server)
-            elseif uptime >= 3 * 60 * 60 + 14 * 60 and uptime <= 3 * 60 * 60 + 21 * 60 then
-                table.insert(validServers.group5, server)
-            elseif uptime >= 5 * 60 * 60 + 31 * 60 and uptime <= 5 * 60 * 60 + 37 * 60 then
-                table.insert(validServers.group6, server)
-                elseif uptime >= 13 * 60 * 60 + 28 * 60 and uptime <= 13 * 60 * 60 + 35 * 60 then
-                table.insert(validServers.group7, server)
-                elseif uptime >= 18 * 60 * 60 + 10 * 60 and uptime <= 18 * 60 * 60 + 17 * 60 then
-                table.insert(validServers.group8, server)
-                elseif uptime >= 7 * 60 * 60 + 45 * 60 and uptime <= 7 * 60 * 60 + 52 * 60 then
-                table.insert(validServers.group9, server)
-                elseif uptime >= 6 * 60 * 60 + 38 * 60 and uptime <= 6 * 60 * 60 + 45 * 60 then
-                table.insert(validServers.group10, server)
-                elseif uptime >= 10 * 60 * 60 + 3 * 60 and uptime <= 10 * 60 * 60 + 9 * 60 then
-                table.insert(validServers.group11, server)
-            elseif uptime >= 11 * 60 * 60 + 11 * 60 and uptime <= 11 * 60 * 60 + 17 * 60 then
-                table.insert(validServers.group12, server)
+            local uptime = getServerUptime(server)
+            local jobId = server.JobId
+            local players = server.PlayerCount
+
+            if server.PlaceId == currentPlaceId
+            and jobId ~= currentJobId
+            and not visitedServers[jobId]
+            and players > 0
+            and players < 13 then
+
+                if uptime >= 4*60*60 + 21*60 and uptime <= 4*60*60 + 30*60 then
+                    table.insert(validServers.group1, server)
+
+                elseif uptime >= 8*60*60 + 52*60 and uptime <= 9*60*60 + 1*60 then
+                    table.insert(validServers.group2, server)
+
+                elseif uptime >= 59*60 + 1 and uptime <= 1*60*60 + 7*60 then
+                    table.insert(validServers.group3, server)
+
+                elseif uptime >= 2*60*60 + 7*60 and uptime <= 2*60*60 + 14*60 then
+                    table.insert(validServers.group4, server)
+
+                elseif uptime >= 3*60*60 + 14*60 and uptime <= 3*60*60 + 21*60 then
+                    table.insert(validServers.group5, server)
+
+                elseif uptime >= 5*60*60 + 31*60 and uptime <= 5*60*60 + 37*60 then
+                    table.insert(validServers.group6, server)
+
+                elseif uptime >= 13*60*60 + 28*60 and uptime <= 13*60*60 + 35*60 then
+                    table.insert(validServers.group7, server)
+
+                elseif uptime >= 18*60*60 + 10*60 and uptime <= 18*60*60 + 17*60 then
+                    table.insert(validServers.group8, server)
+
+                elseif uptime >= 7*60*60 + 45*60 and uptime <= 7*60*60 + 52*60 then
+                    table.insert(validServers.group9, server)
+
+                elseif uptime >= 6*60*60 + 38*60 and uptime <= 6*60*60 + 45*60 then
+                    table.insert(validServers.group10, server)
+
+                elseif uptime >= 10*60*60 + 3*60 and uptime <= 10*60*60 + 9*60 then
+                    table.insert(validServers.group11, server)
+
+                elseif uptime >= 11*60*60 + 11*60 and uptime <= 11*60*60 + 17*60 then
+                    table.insert(validServers.group12, server)
+                end
             end
         end
     end
-end
+
     math.randomseed(tick())
-    local priorityGroups = { "group1", "group2", "group3", "group4" ,"group5","group6","group7","group8","group9","group10","group11","group12"}
+
+    local priorityGroups = {
+        "group1","group2","group3","group4","group5","group6",
+        "group7","group8","group9","group10","group11","group12"
+    }
+
     for _, group in ipairs(priorityGroups) do
         if #validServers[group] > 0 then
             return validServers[group][math.random(#validServers[group])]
